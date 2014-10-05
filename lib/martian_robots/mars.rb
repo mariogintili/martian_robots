@@ -63,11 +63,11 @@ module MartianRobots
       grid.find(-> {[]}) { |row| row.include? element }.find { |a| a == element }
     end
 
-    private
-
     def insert(coords, value)
       set_value(coords, value)
     end
+
+    private
 
     def mark_lost(robot)
       found_robot = find(robot)
