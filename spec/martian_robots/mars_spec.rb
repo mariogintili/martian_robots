@@ -75,16 +75,6 @@ describe MartianRobots::Mars do
     end
   end
 
-  describe "#set" do
-
-    it "updates an object's location on the grid" do
-      subject.grid[0][0] = robot
-      subject.set(robot, [1,1])
-      expect(subject.grid[0][0]).not_to eq robot
-      expect(subject.coordinates_for(robot)).to eq [1,1]
-    end
-  end
-
   describe "#valid?" do
 
     it "returns false if the coordinate is outside of the grid" do

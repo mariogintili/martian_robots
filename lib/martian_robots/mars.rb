@@ -24,7 +24,7 @@ module MartianRobots
 
       else
         robot.move
-        set(robot, new_coords)
+        set(robot)
       end
     end
 
@@ -53,10 +53,10 @@ module MartianRobots
       [x, y] 
     end
 
-    def set(element, new_coordinates)
-      old_coordinates = coordinates_for(element)
+    def set(robot)
+      old_coordinates = coordinates_for(robot)
       delete_by_coordinate(old_coordinates)
-      insert(new_coordinates, element)
+      insert(robot.coordinates, robot)
     end
 
     def find(element)
