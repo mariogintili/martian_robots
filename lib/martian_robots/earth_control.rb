@@ -10,6 +10,18 @@ module MartianRobots
       insert_robots
     end
 
+    def execute!
+      robots.each do |robot|
+        while robot.instructions.any? && robot.safe?
+          mars.upgrade_location(robot)
+        end
+      end
+    end
+
+    def output
+      robots.map(&:position).join("\n")
+    end
+
     private
 
     def interpret_input(input)

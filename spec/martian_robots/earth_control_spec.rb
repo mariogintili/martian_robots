@@ -25,4 +25,34 @@ describe MartianRobots::EarthControl do
       expect(subject.mars.grid[0][3]).to eq robot_three
     end
   end
+
+  describe "#execute!" do
+
+    it "makes the robots move" do
+      expect(robot_one.coordinates).to eq [1,1]
+      expect(robot_one.direction).to eq "E" 
+      subject.execute!
+    end
+
+    it "ensures that robots that fell off are vanished" do
+      subject.execute!
+      expect(robot_two).to be_lost
+      expect(robot_two.coordinates).to eq [3,3]
+      expect(robot_two.direction).to eq "N"
+    end
+
+    it "ensures to taint the surface of mars so future robots ignore those points" do
+      subject.execute!
+      expect(robot_three.coordinates).to eq [2,3]
+      expect(robot_three.direction).to eq "S"
+    end
+  end
+
+  describe "#output" do
+
+    it "returns the output from the activity" do
+      subject.execute!
+      expect(subject.output).to eq output
+    end
+  end
 end
