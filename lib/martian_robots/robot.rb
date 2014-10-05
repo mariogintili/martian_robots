@@ -26,10 +26,27 @@ module MartianRobots
       self.lost = true
     end
 
+    def next_coordinate
+      rotations       = instructions.first.chars
+      new_direction   = next_direction(rotations)
+      change_position[new_direction].call
+    end
+
     def move
       rotations        = instructions.shift.chars
       self.direction   = next_direction(rotations)
       self.coordinates = change_position[direction].call
+    end
+
+    def position
+      message = coordinates.join(' ') + " #{direction}"
+      lost? ? message + " LOST" : message
+    end
+
+    def ignore!
+      rotations         = instructions.join.chars
+      self.instructions = []
+      self.direction    = next_direction(rotations)
     end
 
     private

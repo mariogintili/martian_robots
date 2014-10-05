@@ -39,4 +39,51 @@ describe MartianRobots::Robot do
       expect(subject.coordinates).to eq [0,2]
     end
   end
+
+  describe "#next_coordinate" do
+
+    it "returns the robot's next coordinate without altering them" do
+      expect(subject.next_coordinate).to eq [0,1]
+      expect(subject.coordinates).to eq [1,1]
+    end
+  end
+
+  describe "#position" do
+
+    context "not lost" do
+
+      it "returns the robot's current position and direction" do
+        subject.move
+        expect(subject.position).to eq "0 1 W"
+      end
+    end
+
+    context "lost" do
+
+      it "returns the same + 'LOST' " do
+        subject.move
+        subject.lost = true
+        expect(subject.position).to eq "0 1 W LOST"
+      end
+    end
+  end
+
+  describe "#ignore!" do
+
+    it "sets the robots final orientation" do
+      subject.ignore!
+      expect(subject.direction).to eq "S"
+    end
+
+    it  "does not alter the robots coordinates" do
+      old_coords = subject.coordinates
+      subject.ignore!
+      expect(subject.coordinates).to eq old_coords
+    end
+
+    it "deletes all instructions" do
+      subject.ignore!
+      expect(subject.instructions.any?).to be_falsey
+    end
+  end
 end
