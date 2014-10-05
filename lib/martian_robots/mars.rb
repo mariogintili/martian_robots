@@ -15,13 +15,12 @@ module MartianRobots
 
     def upgrade_location(robot)
       new_coords = robot.next_coordinate
-
-      if forbidden_coordinates.include?(new_coords)
-        robot.ignore!
-
-      elsif off_edge?(new_coords)
-        mark_lost(robot)
-
+      if off_edge?(new_coords)
+        if forbidden_coordinates.any? { |x| x[:coordinates] == robot.coordinates }
+          robot.move false
+        else
+          mark_lost(robot)
+        end
       else
         robot.move
         set(robot)
@@ -70,10 +69,11 @@ module MartianRobots
     private
 
     def mark_lost(robot)
+
       found_robot = find(robot)
       found_robot.vanish
       delete_by_coordinate(found_robot.coordinates)
-      forbidden_coordinates.push found_robot.coordinates
+      forbidden_coordinates.push({coordinates: found_robot.coordinates, direction: found_robot.direction})
     end
 
     def delete_by_coordinate(coords)

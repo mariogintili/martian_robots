@@ -27,15 +27,23 @@ module MartianRobots
     end
 
     def next_coordinate
-      rotations       = instructions.first.chars
-      new_direction   = next_direction(rotations)
-      change_position[new_direction].call
+      action = instructions.first
+      if action == "F"
+        move_position[direction].call
+      else
+        coordinates
+      end
     end
 
-    def move
-      rotations        = instructions.shift.chars
-      self.direction   = next_direction(rotations)
-      self.coordinates = change_position[direction].call
+    def move(forward_moves_allowed=true)
+      action = instructions.shift
+      if action == "F"
+        if forward_moves_allowed
+          self.coordinates = move_position[direction].call
+        end
+      else
+        self.direction  = MOVES[action][direction] rescue binding.pry
+      end
     end
 
     def position
@@ -43,19 +51,9 @@ module MartianRobots
       lost? ? message + " LOST" : message
     end
 
-    def ignore!
-      rotations         = instructions.join.chars
-      self.instructions = []
-      self.direction    = next_direction(rotations)
-    end
-
     private
 
-    def next_direction(rotations)
-      rotations.inject(direction) { |instruction, memo| MOVES[memo][instruction] }
-    end
-
-    def change_position
+    def move_position
       {
         "N" => -> { [coordinates[0], coordinates[1] + 1] },
         "S" => -> { [coordinates[0], coordinates[1] - 1] },
@@ -69,7 +67,7 @@ module MartianRobots
       {
         direction: position.last,
         coordinates: position.take(2).map(&:to_i),
-        instructions: args[:instructions].split("F"),
+        instructions: args[:instructions].chars,
       }
     end
   end
