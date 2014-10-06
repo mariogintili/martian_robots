@@ -28,14 +28,14 @@ module MartianRobots
 
     def next_coordinate
       action = instructions.first
-      action == "F" ? move_position[direction].call : coordinates
+      action == "F" ? move_position[direction] : coordinates
     end
 
     def move(opts = {:allow_forward => true})
       action = instructions.shift
       if action == "F"
         if opts[:allow_forward]
-          self.coordinates = move_position[direction].call
+          self.coordinates = move_position[direction]
         end
       else
         self.direction  = MOVES[action][direction]
@@ -51,10 +51,10 @@ module MartianRobots
 
     def move_position
       {
-        "N" => -> { [coordinates[0], coordinates[1] + 1] },
-        "S" => -> { [coordinates[0], coordinates[1] - 1] },
-        "E" => -> { [coordinates[0] + 1, coordinates[1]] },
-        "W" => -> { [coordinates[0] - 1, coordinates[1]] },
+        "N" => [coordinates[0], coordinates[1] + 1],
+        "S" => [coordinates[0], coordinates[1] - 1],
+        "E" => [coordinates[0] + 1, coordinates[1]],
+        "W" => [coordinates[0] - 1, coordinates[1]],
       }
     end
 
