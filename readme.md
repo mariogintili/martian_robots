@@ -10,8 +10,8 @@ To run the test suite, first ```bundle``` and:
 
 See in action by running
 
-```
- ruby main.rb
+```bash
+ $ ruby main.rb
 ```
 
 
