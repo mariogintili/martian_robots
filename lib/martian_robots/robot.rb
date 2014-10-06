@@ -28,21 +28,17 @@ module MartianRobots
 
     def next_coordinate
       action = instructions.first
-      if action == "F"
-        move_position[direction].call
-      else
-        coordinates
-      end
+      action == "F" ? move_position[direction].call : coordinates
     end
 
-    def move(forward_moves_allowed=true)
+    def move(opts = {:allow_forward => true})
       action = instructions.shift
       if action == "F"
-        if forward_moves_allowed
+        if opts[:allow_forward]
           self.coordinates = move_position[direction].call
         end
       else
-        self.direction  = MOVES[action][direction] rescue binding.pry
+        self.direction  = MOVES[action][direction]
       end
     end
 

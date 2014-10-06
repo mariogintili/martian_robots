@@ -95,10 +95,10 @@ describe MartianRobots::Mars do
 
       let(:next_coordinates) { [1,1] }
 
-      it "tells the robot to ignore future movement" do
+      it "tells the robot to move with precaution" do
         subject.forbidden_coordinates.push next_coordinates
         subject.grid[0][0] = robot
-        expect(robot).to receive(:ignore!)
+        expect(robot).to receive(:move)
         subject.upgrade_location(robot)
       end
     end
