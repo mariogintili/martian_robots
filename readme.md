@@ -4,7 +4,7 @@
 
 To run the test suite, first ```bundle``` and:
 
-```
+```bash
  $ bundle exec rspec -fd
 ```
 
