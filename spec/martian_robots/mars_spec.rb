@@ -19,4 +19,16 @@ describe MartianRobots::Mars do
       expect { Mars.new(limits: [30, 51]) }.to raise_error
     end
   end
+
+  describe "#in?" do
+
+    it "returns true for coordinates that are inside its limits" do
+      expect(subject.in?([3,3])).to be_truthy
+      expect(subject.in?([3,4])).to be_falsey
+      expect(subject.in?([-1,2])).to be_falsey
+      expect(subject.in?([1,-1])).to be_falsey
+      expect(subject.in?([3,3])).to be_truthy
+      expect(subject.in?([5,3])).to be_truthy
+    end
+  end
 end
