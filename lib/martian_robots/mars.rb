@@ -26,6 +26,10 @@ module MartianRobots
       forbidden_states.push state
     end
 
+    def allowed?(state)
+      !forbidden_states.include?(state)
+    end
+
     def in?(coords)
       unless coords.any? { |n|  0 > n }
         x, y = coords

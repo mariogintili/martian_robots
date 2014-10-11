@@ -2,9 +2,10 @@ require "spec_helper"
 
 describe MartianRobots::Mars do
 
-  let(:limits)      { [5,3] }
-  let(:robot)       { double('robot', coordinates: [10,10] ) }
-  subject           { Mars.new(limits: limits) }
+  let(:limits)          { [5,3] }
+  let(:robot)           { double('robot', coordinates: [10,10] ) }
+  let(:forbidden_state) { {coordinates: [0,0], direction: "S"} }
+  subject               { Mars.new(limits: limits) }
 
   describe "#initialize" do
 
@@ -34,11 +35,20 @@ describe MartianRobots::Mars do
 
   describe "#set_forbidden_state" do
 
-    let(:forbidden_state) { {coordinates: [0,0], direction: "S"} }
+    before { subject.set_forbbiden_state(forbidden_state) }
 
     it "pushes a new forbidden states to the #forbidden_states" do
-      subject.set_forbbiden_state(forbidden_state)
       expect(subject.forbidden_states).to include forbidden_state
+    end
+  end
+
+  describe "#allowed?" do
+
+    before { subject.set_forbbiden_state(forbidden_state) }
+
+    it "checks if the given state is forbidden" do
+      expect(subject.allowed?(forbidden_state)).to be_falsey
+      expect(subject.allowed?({ coordinates: [1,1], direction: "E"})).to be_truthy
     end
   end
 end
