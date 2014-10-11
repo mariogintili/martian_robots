@@ -26,20 +26,47 @@ module MartianRobots
       self.lost = true
     end
 
+    def state
+      { coordinates: coordinates, direction: direction }
+    end
+
+    def move!
+      next_is_forward? ? forward! : cruise!
+      instructions.shift
+    end
+
+    def drop_scent(surface)
+      vanish
+      surface.set_forbbiden_state state
+      instructions.shift
+    end
+
+    def move_on(surface)
+      if surface.in?(next_coordinate) && surface.allowed?(state)
+        move!
+      elsif !surface.allowed?(state)
+        instructions.shift
+        move!
+      else
+        drop_scent surface 
+      end
+    end
+
     def next_coordinate
       action = instructions.first
       action == "F" ? move_position[direction] : coordinates
     end
 
-    def move(opts = {:allow_forward => true})
-      action = instructions.shift
-      if action == "F"
-        if opts[:allow_forward]
-          self.coordinates = move_position[direction]
-        end
-      else
-        self.direction  = MOVES[action][direction]
-      end
+    def next_is_forward?
+      instructions.first == "F"
+    end
+
+    def cruise!
+      self.direction = MOVES[instructions.first][direction]
+    end
+
+    def forward!
+      self.coordinates = move_position[direction]
     end
 
     def position
