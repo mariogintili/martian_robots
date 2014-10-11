@@ -5,15 +5,15 @@ module MartianRobots
 
     def initialize(args)
       options = interpret_input args[:input]
+
       @mars   = options[:mars]
       @robots = options[:robots]
-      insert_robots
     end
 
     def execute!
       robots.each do |robot|
         while robot.instructions.any? && robot.safe?
-          mars.upgrade_location(robot)
+          robot.move_on mars
         end
       end
     end
@@ -30,19 +30,13 @@ module MartianRobots
     end
 
     def build_mars(input)
-      Mars.new coordinates: input.shift.split("").map(&:to_i)
+      Mars.new limits: input.shift.split("").map(&:to_i)
     end
 
     def build_robots(input)
       input.map do |data|
         info = data.split
         Robot.new position: info.first.split(//).join(' '), instructions: info.last
-      end
-    end
-
-    def insert_robots
-      robots.each do |robot|
-        mars.insert(robot.coordinates, robot)
       end
     end
   end

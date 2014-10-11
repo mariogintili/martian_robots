@@ -5,7 +5,7 @@ describe MartianRobots::Robot do
   subject             { Robot.new(position: position, instructions: instructions) }
   let(:position)      { "3 2 N" }
   let(:instructions)  { "FRRFLLFFRRFLL" }
-  let(:mars)          { double("mars", limits: [5, 3], x_limit: 5, y_limit: 3, set_forbidden_state: nil, in?: nil)}
+  let(:mars)          { double("mars", limits: [5, 3], x_limit: 5, y_limit: 3, set_forbbiden_state: nil, in?: nil, allowed?: nil)}
   
   describe "#initialize" do
 
@@ -87,13 +87,15 @@ describe MartianRobots::Robot do
 
       it "marks the robot as lost" do
         allow(mars).to receive(:in?).with([3,3]).and_return(false)
+        allow(mars).to receive(:allowed?).with(subject.state).and_return(true)
         subject.move_on mars
         expect(subject.lost?).to be_truthy
       end
 
       it "declares a forbidden state on the surface" do
-        expect(mars).to receive(:set_forbidden_state).with(subject.state)
+        expect(mars).to receive(:set_forbbiden_state).with(subject.state)
         allow(mars).to receive(:in?).with([3,3]).and_return(false)
+        allow(mars).to receive(:allowed?).with(subject.state).and_return(true)
         subject.move_on mars
       end
     end

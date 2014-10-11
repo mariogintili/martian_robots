@@ -18,6 +18,10 @@ module MartianRobots
       !!lost
     end
 
+    def safe?
+      !lost
+    end
+
     def vanish
       self.lost = true
     end
@@ -26,14 +30,26 @@ module MartianRobots
       { coordinates: coordinates, direction: direction }
     end
 
+    def move!
+      next_is_forward? ? forward! : cruise!
+      instructions.shift
+    end
+
+    def drop_scent(surface)
+      vanish
+      surface.set_forbbiden_state state
+      instructions.shift
+    end
+
     def move_on(surface)
       if surface.in?(next_coordinate) && surface.allowed?(state)
-        next_is_forward? ? forward! : cruise!
+        move!
+      elsif !surface.allowed?(state)
+        instructions.shift
+        move!
       else
-        vanish
-        surface.set_forbidden_state state
+        drop_scent surface 
       end
-      instructions.shift
     end
 
     def next_coordinate

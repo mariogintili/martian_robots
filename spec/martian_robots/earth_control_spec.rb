@@ -17,15 +17,6 @@ describe MartianRobots::EarthControl do
     "1 1 E\n3 3 N LOST\n2 3 S"
   end
 
-  describe "#initialize" do
-
-    it "places the robots on the grid" do
-      expect(subject.mars.grid[1][1]).to eq robot_one
-      expect(subject.mars.grid.last[2]).to eq robot_two
-      expect(subject.mars.grid[0][3]).to eq robot_three
-    end
-  end
-
   describe "#execute!" do
 
     it "makes the robots move" do
