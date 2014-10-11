@@ -1,13 +1,17 @@
 module MartianRobots
   class Mars
 
-    attr_reader :limits, :forbidden_positions
+    attr_accessor :limits, :forbidden_states
 
     MAX_COORD_LENGTH = 50
 
     def initialize(args)
       raise "A grid cant exceel a value of 50" if args[:limits].max > MAX_COORD_LENGTH 
       @limits  = args[:limits]
+    end
+
+    def forbidden_states
+      @forbidden_states ||= []
     end
 
     def x_limit
@@ -18,10 +22,15 @@ module MartianRobots
       limits.last
     end
 
+    def set_forbbiden_state(state)
+      forbidden_states.push state
+    end
+
     def in?(coords)
-      return false if coords.any? { |x|  0 > x }
-      x, y = coords
-      (x_limit >= x) && (y_limit >= y)
+      unless coords.any? { |n|  0 > n }
+        x, y = coords
+        (x_limit >= x) && (y_limit >= y)
+      end
     end
   end
 end

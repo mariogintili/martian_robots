@@ -31,4 +31,14 @@ describe MartianRobots::Mars do
       expect(subject.in?([5,3])).to be_truthy
     end
   end
+
+  describe "#set_forbidden_state" do
+
+    let(:forbidden_state) { {coordinates: [0,0], direction: "S"} }
+
+    it "pushes a new forbidden states to the #forbidden_states" do
+      subject.set_forbbiden_state(forbidden_state)
+      expect(subject.forbidden_states).to include forbidden_state
+    end
+  end
 end
