@@ -3,16 +3,17 @@ require "spec_helper"
 describe MartianRobots::Robot do
 
   subject             { Robot.new(position: position, instructions: instructions) }
-  let(:position)      { "1 1 E" }
-  let(:instructions)  { "RRFRFRFRF" }
+  let(:position)      { "3 2 N" }
+  let(:instructions)  { "FRRFLLFFRRFLL" }
+  let(:mars)          { double("mars", limits: [5, 3], x_limit: 5, y_limit: 3, set_forbidden_state: nil, in?: nil)}
   
   describe "#initialize" do
 
     let(:parsed_instructions) { instructions.chars }
 
     it "takes in a position and moving instructions, and sets them as attributes" do
-      expect(subject.coordinates).to eq([1,1])
-      expect(subject.direction).to eq "E"
+      expect(subject.coordinates).to eq([3,2])
+      expect(subject.direction).to eq "N"
       expect(subject.instructions).to eq parsed_instructions
     end
   end
@@ -24,46 +25,93 @@ describe MartianRobots::Robot do
     end
   end
 
-  describe "#move" do
+  describe "#state" do
 
-    it "returns the self's new coordinates" do
-      subject.move
-      expect(subject.coordinates).to eq [1,1]
-    end
-
-    it "updates the robot's current movement" do
-      subject.move
-      expect(subject.direction).to eq "S"
-      expect(subject.coordinates).to eq [1,1]
-      2.times { subject.move }
-      expect(subject.coordinates).to eq [0,1]
+    it "returns a hash with the current coordinates and direction" do
+      expect(subject.state).to eq({ coordinates: [3,2], direction: "N"})
     end
   end
 
-  describe "#next_coordinate" do
+  describe "#move_on" do
 
-    it "returns the robot's next coordinate without altering them" do
-      expect(subject.next_coordinate).to eq [1,1]
-      expect(subject.coordinates).to eq [1,1]
+    it "checks if the surface has such next coordinates" do
+      expect(mars).to receive(:in?).with([3,3])
+      subject.move_on mars
+    end
+
+    it "checks if the next coordinate is not forbidden" do
+      expect(mars).to receive(:allowed?).with(subject.state)
+      allow(mars).to receive(:in?).and_return(true)
+      subject.move_on mars
+    end
+
+    it "deletes the first instruction" do
+      allow(mars).to receive(:in?).with([3,3]).and_return(true)
+      allow(mars).to receive(:allowed?).and_return(true)
+      subject.move_on mars
+      expect(subject.instructions.first).not_to eq "F"
+    end
+
+    context "when the next instruction is a change in direction" do
+
+      it "updates the robots direction but not its coordinates" do
+        subject.instructions = ["R", "R"]
+        allow(mars).to receive(:in?).and_return(true)
+        allow(mars).to receive(:allowed?).and_return(true)
+        subject.move_on(mars)
+        expect(subject.coordinates).to eq [3,2]
+        expect(subject.direction).to eq "E"
+      end
     end
   end
 
+  context "when the next instruction is a forward" do
+
+    context "with valid coordinates" do
+
+      it "upgrades #coordinates if the surface has those coordinates" do
+        allow(mars).to receive(:in?).with([3,3]).and_return(true)
+        allow(mars).to receive(:allowed?).and_return(true)
+        subject.move_on mars
+        expect(subject.coordinates).to eq [3,3]
+      end
+    end
+
+    context "with invalid coordinates" do
+
+      it "does not upgrade the coordinates" do
+        allow(mars).to receive(:in?).with([3,3]).and_return(false)
+        subject.move_on mars
+        expect(subject.coordinates).to eq [3,2]
+      end
+
+      it "marks the robot as lost" do
+        allow(mars).to receive(:in?).with([3,3]).and_return(false)
+        subject.move_on mars
+        expect(subject.lost?).to be_truthy
+      end
+
+      it "declares a forbidden state on the surface" do
+        expect(mars).to receive(:set_forbidden_state).with(subject.state)
+        allow(mars).to receive(:in?).with([3,3]).and_return(false)
+        subject.move_on mars
+      end
+    end
+  end
   describe "#position" do
 
     context "not lost" do
 
       it "returns the robot's current position and direction" do
-        subject.move
-        expect(subject.position).to eq "1 1 S"
+        expect(subject.position).to eq "3 2 N"
       end
     end
 
     context "lost" do
 
       it "returns the same + 'LOST' " do
-        subject.move
-        subject.lost = true
-        expect(subject.position).to eq "1 1 S LOST"
+        subject.vanish
+        expect(subject.position).to eq "3 2 N LOST"
       end
     end
   end
