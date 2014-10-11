@@ -52,7 +52,7 @@ describe MartianRobots::Robot do
       expect(subject.instructions.first).not_to eq "F"
     end
 
-    context "when the next instruction is a change in direction" do
+    context "Changing direction" do
 
       it "updates the robots direction but not its coordinates" do
         subject.instructions = ["R", "R"]
@@ -63,43 +63,44 @@ describe MartianRobots::Robot do
         expect(subject.direction).to eq "E"
       end
     end
-  end
 
-  context "when the next instruction is a forward" do
+    context "Moving" do
 
-    context "with valid coordinates" do
+      context "with valid coordinates" do
 
-      it "upgrades #coordinates if the surface has those coordinates" do
-        allow(mars).to receive(:in?).with([3,3]).and_return(true)
-        allow(mars).to receive(:allowed?).and_return(true)
-        subject.move_on mars
-        expect(subject.coordinates).to eq [3,3]
+        it "upgrades #coordinates if the surface has those coordinates" do
+          allow(mars).to receive(:in?).with([3,3]).and_return(true)
+          allow(mars).to receive(:allowed?).and_return(true)
+          subject.move_on mars
+          expect(subject.coordinates).to eq [3,3]
+        end
+      end
+
+      context "with invalid coordinates" do
+
+        it "does not upgrade the coordinates" do
+          allow(mars).to receive(:in?).with([3,3]).and_return(false)
+          subject.move_on mars
+          expect(subject.coordinates).to eq [3,2]
+        end
+
+        it "marks the robot as lost" do
+          allow(mars).to receive(:in?).with([3,3]).and_return(false)
+          allow(mars).to receive(:allowed?).with(subject.state).and_return(true)
+          subject.move_on mars
+          expect(subject.lost?).to be_truthy
+        end
+
+        it "declares a forbidden state on the surface" do
+          expect(mars).to receive(:set_forbbiden_state).with(subject.state)
+          allow(mars).to receive(:in?).with([3,3]).and_return(false)
+          allow(mars).to receive(:allowed?).with(subject.state).and_return(true)
+          subject.move_on mars
+        end
       end
     end
-
-    context "with invalid coordinates" do
-
-      it "does not upgrade the coordinates" do
-        allow(mars).to receive(:in?).with([3,3]).and_return(false)
-        subject.move_on mars
-        expect(subject.coordinates).to eq [3,2]
-      end
-
-      it "marks the robot as lost" do
-        allow(mars).to receive(:in?).with([3,3]).and_return(false)
-        allow(mars).to receive(:allowed?).with(subject.state).and_return(true)
-        subject.move_on mars
-        expect(subject.lost?).to be_truthy
-      end
-
-      it "declares a forbidden state on the surface" do
-        expect(mars).to receive(:set_forbbiden_state).with(subject.state)
-        allow(mars).to receive(:in?).with([3,3]).and_return(false)
-        allow(mars).to receive(:allowed?).with(subject.state).and_return(true)
-        subject.move_on mars
-      end
-    end
   end
+
   describe "#position" do
 
     context "not lost" do
