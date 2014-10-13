@@ -30,17 +30,6 @@ module MartianRobots
       { coordinates: coordinates, direction: direction }
     end
 
-    def move!
-      next_is_forward? ? forward! : cruise!
-      instructions.shift
-    end
-
-    def drop_scent(surface)
-      vanish
-      surface.set_forbbiden_state state
-      instructions.shift
-    end
-
     def move_on(surface)
       if surface.in?(next_coordinate) && surface.allowed?(state)
         move!
@@ -57,6 +46,25 @@ module MartianRobots
       action == "F" ? move_position[direction] : coordinates
     end
 
+
+    def position
+      message = coordinates.join(' ') + " #{direction}"
+      lost? ? message + " LOST" : message
+    end
+
+    private
+
+    def move!
+      next_is_forward? ? forward! : cruise!
+      instructions.shift
+    end
+
+    def drop_scent(surface)
+      vanish
+      surface.set_forbbiden_state state
+      instructions.shift
+    end
+
     def next_is_forward?
       instructions.first == "F"
     end
@@ -68,13 +76,6 @@ module MartianRobots
     def forward!
       self.coordinates = move_position[direction]
     end
-
-    def position
-      message = coordinates.join(' ') + " #{direction}"
-      lost? ? message + " LOST" : message
-    end
-
-    private
 
     def move_position
       {
