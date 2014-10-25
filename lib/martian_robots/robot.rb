@@ -31,7 +31,7 @@ module MartianRobots
     end
 
     def move_on(surface)
-      if surface.in?(next_coordinate) && surface.allowed?(state)
+      if surface.in?(next_coordinate)
         move!
       elsif !surface.allowed?(state)
         instructions.shift

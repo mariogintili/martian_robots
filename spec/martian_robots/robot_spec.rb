@@ -40,8 +40,7 @@ describe MartianRobots::Robot do
     end
 
     it "checks if the next coordinate is not forbidden" do
-      expect(mars).to receive(:allowed?).with(subject.state)
-      allow(mars).to receive(:in?).and_return(true)
+      expect(mars).to receive(:in?)
       subject.move_on mars
     end
 
